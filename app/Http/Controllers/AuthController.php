@@ -33,25 +33,45 @@ class AuthController extends Controller
             'data' => $success
         ]);
     }
-
     public function login(Request $request)
     {
-        $request->validate([
+        $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-     
-        $user = User::where('email', $request->email)->first();
-     
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
-     
-        return $user->createToken('User Login')->plainTextToken;
-    }
 
+        if (Auth::attempt($credentials)) {
+            $token = $request->user()->createToken('authToken')->plainTextToken;
+            return response()->json(['token' => $token], 200);
+        } else {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+    }
+    // public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required',
+    //     ]);
+     
+    //     $user = User::where('email', $request->email)->first();
+     
+    //     if (! $user || ! Hash::check($request->password, $user->password)) {
+    //         throw ValidationException::withMessages([
+    //             'email' => ['The provided credentials are incorrect.'],
+    //         ]);
+    //     }
+     
+    //     return $user->createToken('User Login')->plainTextToken;
+    // }
+
+    // public function logout(Request $request)
+    // {
+      
+    //     $request->user()->tokens()->delete();
+
+    //     return response()->json(['message' => 'Logout successful'], 200);
+    // }
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

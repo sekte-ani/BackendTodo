@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NoteController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/logout', [AuthController::class, 'logout']);
+    // Route::get('/logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     
     Route::get('/notes', [NoteController::class, 'index']);
